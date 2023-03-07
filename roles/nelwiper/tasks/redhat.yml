@@ -1,13 +1,126 @@
 ---
+- name: Update YUM Cache
+  yum:
+    update_cache: yes
 
-#- name: Remove the entire Elastic stack
-#  yum:
-#    name: "{{item}}" 
-#    state: absent
-#  with_items:
-#    - filebeat
-#    - kibana
-#    - elasticsearch
-#    - logstash
-#  when: ansible_os_family == 'RedHat'  
-#
+    #- name: Resets all units with failed status
+    #  shell:
+    #   cmd: systemctl reset-failed.service
+
+   #- name: Check if listed package is installed or not on RedHat Linux family
+   #  command: rpm -qa | grep "{{ item }}"
+   #  with_items:
+   #    - filebeat
+   #    - elasticsearch
+   #    - logstash
+   #    - kibana
+   #  register: package_check
+   #  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Stop Belk Services
+  ignore_errors: true
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+  with_items:
+    - elasticsearch
+    - filebeat
+    - kibana
+
+# Start Logstash Elimination
+- name: Find Logstash PID
+  ignore_errors: yes
+  shell: "ps -few | grep logstash | awk '{print $2}'"
+  register: running_processes
+
+- name: Kill Logstash
+  ignore_errors: yes
+  shell: "kill {{ item }}"
+  with_items: "{{ running_processes.stdout_lines }}"
+
+  #- wait_for:
+  #    path: "/proc/{{ item }}/status"
+  #    state: absent
+  #  with_items: "{{ running_processes.stdout_lines }}"
+  #  ignore_errors: yes
+  #  register: processes_name
+
+- name: 1/2 Fallback Logstash Kill
+  ignore_errors: yes
+  shell: "kill -9 {{ item }}"
+  with_items: "{{ process_name.results | select('failed') | map(attribute='item') | list }}"
+
+- name: Install lsof to kill Logstash
+  ignore_errors: yes
+  ansible.builtin.apt:
+    name: lsof
+    state: present
+
+- name: 2/2 Fallback Logstash Kill
+  ignore_errors: yes
+  shell:
+    cmd: kill -9 `lsof -t -u logstash`
+
+- name: Remove leftover /opt/es-ca
+  file:
+    path: /opt/es-ca
+    state: absent
+
+- name: Remove leftover /usr/share/$name
+  file:
+    path: /usr/share/{{ item }}-*
+    state: absent
+  with_items:
+    - logstash
+    - elasticsearch
+    - kibana
+    - filebeat
+
+- name: Remove leftover /etc/$package
+  file:
+    path: /etc/{{ item }}-*
+    state: absent
+  with_items:
+    - logstash
+    - elasticsearch
+    - kibana
+    - filebeat
+
+- name: Remove leftover /var/lib/$package
+  file:
+    path: /var/lib/{{ item }}-*
+    state: absent
+  with_items:
+    - logstash
+    - elasticsearch
+    - kibana
+    - filebeat
+
+- name: Remove leftover /var/log/$package
+  file:
+    path: /var/log/{{ item }}-*
+    state: absent
+  with_items:
+    - logstash
+    - elasticsearch
+    - kibana
+    - filebeat
+
+- name: RedHat Remove the entire elastic stack
+  yum:
+    name:
+    - filebeat
+    - kibana
+    - elasticsearch
+    - logstash
+    state: absent
+  when: ansible_facts['os_family']  == 'RedHat'
+
+- name: Reload unit Files
+  shell:
+    cmd: systemctl daemon-reload
+
+- name: yum update && yum upgrade
+  shell:
+    cmd: yum update -y && yum upgrade -y
+
