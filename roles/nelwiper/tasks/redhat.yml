@@ -68,7 +68,7 @@
 
 - name: Remove leftover /usr/share/$name
   file:
-    path: /usr/share/{{ item }}-*
+    path: /usr/share/{{ item }}
     state: absent
   with_items:
     - logstash
@@ -78,7 +78,7 @@
 
 - name: Remove leftover /etc/$package
   file:
-    path: /etc/{{ item }}-*
+    path: /etc/{{ item }}
     state: absent
   with_items:
     - logstash
@@ -88,7 +88,7 @@
 
 - name: Remove leftover /var/lib/$package
   file:
-    path: /var/lib/{{ item }}-*
+    path: /var/lib/{{ item }}
     state: absent
   with_items:
     - logstash
@@ -98,7 +98,7 @@
 
 - name: Remove leftover /var/log/$package
   file:
-    path: /var/log/{{ item }}-*
+    path: /var/log/{{ item }}
     state: absent
   with_items:
     - logstash
