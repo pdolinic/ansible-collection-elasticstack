@@ -1,0 +1,14 @@
+---
+
+- name: Generate elastic bootstrap password via kernel random generator
+  shell: |
+    if [ -f "/usr/share/elasticsearch/generated_passwords" ]; then
+      password=$(grep "elasticsearch_bootstrap_pw" /usr/share/elasticsearch/generated_passwords | cut -d: -f2)
+    else
+      password=$(cat /proc/sys/kernel/random/uuid | tr -d '-' | head -c 25)
+      echo "elastic_boostrap_pw:$password" > /usr/share/elasticsearch/generated_passwords
+    fi
+  register: result
+
+- set_fact:
+    elasticsearch_bootstrap_pw: "{{ result.stdout }}"

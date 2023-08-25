@@ -232,6 +232,9 @@
   changed_when: false
   register: elasticsearch_keystore
 
+- name: Generate elastic bootstrap password via kernel random generator
+  ansible.builtin.include_tasks: elastic-pw-generator.yml
+
 - name: Set bootstrap password # noqa: risky-shell-pipe
   ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
