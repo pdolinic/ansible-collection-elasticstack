@@ -27,7 +27,7 @@
   changed_when: false
   register: es_keystore
 
-- name: elasticsearch_bootstrap_pw genpw
+- name: Generate bootstrap password via kernel random generator
   ansible.builtin.include_tasks: elastic-password-generator.yml
 
 - name: Set bootstrap password
@@ -39,7 +39,6 @@
   notify:
     - Restart Elasticsearch
   ignore_errors: "{{ ansible_check_mode }}"
-
 
 - name: Get xpack.security.http.ssl.keystore.secure_password
   shell: >
@@ -104,7 +103,6 @@
     - not elasticsearch_http_security
   notify:
     - Restart Elasticsearch
-
 
 - name: Get xpack.security.transport.ssl.keystore.secure_password
   shell: >
