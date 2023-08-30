@@ -47,11 +47,11 @@ logstash_sniffing: false
 # logstash security
 logstash_password_hash: true
 logstash_user: logstash_writer
-logstash_password: "{{ lookup('ansible.builtin.password', '/dev/null chars=ascii_letters,digits', seed='logstash_pw_seed') }}"
+logstash_password: "{{ lookup('ansible.builtin.password', '/dev/null chars=ascii_letters,digits length=25', seed='logstash_pw_seed') }}"
 logstash_user_indices: '"ecs-logstash*", "logstash*", "logs*"'
 logstash_reset_writer_role: true
 
-logstash_tls_key_passphrase: "{{ lookup('ansible.builtin.password', '/dev/null chars=ascii_letters,digits', seed='logstash_tls_seed') }}"
+logstash_tls_key_passphrase: "{{ lookup('ansible.builtin.password', '/dev/null chars=ascii_letters,digits length=25', seed='logstash_tls_seed') }}"
 logstash_certs_dir: /etc/logstash/certs
 logstash_cert_validity_period: 1095
 logstash_cert_expiration_buffer: 30

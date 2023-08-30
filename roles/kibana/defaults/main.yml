@@ -8,7 +8,7 @@ kibana_security: true
 kibana_tls: false
 kibana_tls_cert: /etc/kibana/certs/cert.pem
 kibana_tls_key: /etc/kibana/certs/key.pem
-kibana_tls_key_passphrase: "{{ lookup('ansible.builtin.password', '/dev/null chars=ascii_letters,digits', seed='kibana_seed') }}"
+kibana_tls_key_passphrase: "{{ lookup('ansible.builtin.password', '/dev/null chars=ascii_letters,digits length=25', seed='kibana_seed') }}"
 elasticstack_ca_dir: /opt/es-ca
 elasticstack_ca_pass: PleaseChangeMe #this one remains and will be changed in another PR
 elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
