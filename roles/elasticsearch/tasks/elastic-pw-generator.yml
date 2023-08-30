@@ -1,15 +1,5 @@
 ---
 
-- name: Generate elastic bootstrap password via kernel random generator
-  shell: >
-    /bin/bash -o pipefail -c '
-    if [ -f "/usr/share/elasticsearch/generated_passwords" ]; then
-      grep "elasticsearch_bootstrap_pw" /usr/share/elasticsearch/generated_passwords | cut -d: -f2;
-    else
-      cat /proc/sys/kernel/random/uuid | tr -d "-" | head -c 25;
-    fi'
-  register: result
-
-- name: Set elasticsearch_bootstrap_pw fact
+- name: Generate elastic bootstrap password
   set_fact:
-    elasticsearch_bootstrap_pw: "{{ result.stdout }}"
+    elasticsearch_bootstrap_pw: "{{ lookup('ansible.builtin.password', '/dev/null chars=ascii_letters,digits,punctuation', seed='somevar-or-string') }}"
