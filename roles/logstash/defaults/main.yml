@@ -47,11 +47,11 @@ logstash_sniffing: false
 # logstash security
 logstash_password_hash: true
 logstash_user: logstash_writer
-logstash_password: password
+logstash_password: "{{ lookup('ansible.builtin.password', '/dev/null chars=ascii_letters,digits', seed='logstash_pw_seed') }}"
 logstash_user_indices: '"ecs-logstash*", "logstash*", "logs*"'
 logstash_reset_writer_role: true
 
-logstash_tls_key_passphrase: LogstashChangeMe
+logstash_tls_key_passphrase: "{{ lookup('ansible.builtin.password', '/dev/null chars=ascii_letters,digits', seed='logstash_tls_seed') }}"
 logstash_certs_dir: /etc/logstash/certs
 logstash_cert_validity_period: 1095
 logstash_cert_expiration_buffer: 30
@@ -71,7 +71,7 @@ logstash_pipeline_identifier_defaults: false
 
 elasticstack_ca_dir: /opt/es-ca
 elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
-elasticstack_ca_pass: PleaseChangeMe
+elasticstack_ca_pass: PleaseChangeMe #this one remains and will be changed in another PR
 
 # "global" variables for all roles
 
