@@ -1,5 +1,0 @@
----
-
-- name: Generate elastic bootstrap password
-  ansible.builtin.set_fact:
-    elasticsearch_bootstrap_pw: "{{ lookup('ansible.builtin.password', '/dev/null chars=ascii_letters,digits,punctuation', seed='somevar-or-string') }}"
